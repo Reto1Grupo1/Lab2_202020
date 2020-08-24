@@ -26,9 +26,13 @@
   Este módulo es una aplicación básica con un menú de opciones para cargar datos, contar elementos, y hacer búsquedas sobre una lista .
 """
 
+#ADT y DataStructures se nombran lt, no sabemos si eso genera un error imprevisto en el codigo y arreglarlo es bastante dificil
+#por alguna razon al imprimir el lista["first"] salen 2000 "}}}}}" llaves
+
 import config as cf
 import sys
 import csv
+from Sorting import insertionsort as sort
 from ADT import list as lt
 from DataStructures import listiterator as it
 from DataStructures import liststructure as lt
@@ -107,17 +111,56 @@ def countElementsFilteredByColumn(criteria, column, lst):
         print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
     return counter
 
+def less(element1, element2):
+    if int(element1['id']) < int(element2['id']):
+        return True
+    return False
+
 def countElementsByCriteria(criteria, column, lst):
     """
     Retorna la cantidad de elementos que cumplen con un criterio para una columna dada
     """
     return 0
 
-def orderElementsByCriteria(function, column, lst, elements):
+def orderElementsByCriteria(listadetails,less,maxvote,minvote,bestvote,worstvote):
     """
     Retorna una lista con cierta cantidad de elementos ordenados por el criterio
     """
-    return 0
+    average=[]
+    averagemax=[]
+    averagemin=[]
+
+    count=[]
+    countmax=[]
+    countmin=[]
+
+    retorno={}
+
+    for i in range(1,len(listadetails)):
+        average.append(listadetails[i]["vote_average"])
+        count.append(listadetails[i]["vote_count"])
+
+    sort.insertionSort(average,less)
+    sort.insertionSort(count,less)
+
+    for i in range(0,10):
+        averagemax.append(average[i])
+        countmax.append(count[i])
+
+    for i in range(0,10):
+        averagemin.append((average)[i])
+        countmin.append((count)[i])
+
+    if maxvote==1:
+        retorno["Mas_votadas"]=countmax
+    if minvote==1:
+        retorno["Menos_votadas"]=countmin
+    if bestvote==1:
+        retorno["Mejores_votadas"]=averagemax
+    if worstvote==1:
+        retorno["Mejore_votadas"]=averagemin
+
+    return retorno
 
 def main():
     """
@@ -133,19 +176,23 @@ def main():
         inputs =input('Seleccione una opción para continuar\n') #leer opción ingresada
         if len(inputs)>0:
             if int(inputs[0])==1: #opcion 1
-                lista = loadCSVFile("Data/test.csv") #llamar funcion cargar datos
-                print("Datos cargados, ",lista['size']," elementos cargados")
+                listadetails = loadCSVFile("Data/SmallMoviesDetailsCleaned.csv") #llamar funcion cargar datos
+                listacasting = loadCSVFile("Data/MoviesCastingRaw-small.csv")
+                print("Datos cargados details, ",listadetails['size']," elementos cargados")
+                print("Datos cargados casting, ",listacasting['size']," elementos cargados")
             elif int(inputs[0])==2: #opcion 2
-                if lista==None or lista['size']==0: #obtener la longitud de la lista
-                    print("La lista esta vacía")    
-                else: print("La lista tiene ",lista['size']," elementos")
+                if listadetails==None or listadetails['size']==0: #obtener la longitud de la lista
+                    print("La lista details esta vacía")    
+                else: print("La lista details tiene ",listadetails['size']," elementos")
+                if listacasting==None or listacasting['size']==0: #obtener la longitud de la lista
+                    print("La lista casting esta vacía")    
+                else: print("La lista casting tiene ",listacasting['size']," elementos")
             elif int(inputs[0])==3: #opcion 3
-                if lista==None or lista['size']==0: #obtener la longitud de la lista
-                    print("La lista esta vacía")
-                else:   
-                    criteria =input('Ingrese el criterio de búsqueda\n')
-                    counter=countElementsFilteredByColumn(criteria, "nombre", lista) #filtrar una columna por criterio  
-                    print("Coinciden ",counter," elementos con el crtierio: ", criteria  )
+                maxvote=int(input("Desea ver las peliculas mas votadas? 1: Si, 0: No: "))
+                minvote=int(input("Desea ver las peliculas menos votadas? 1: Si, 0: No: "))
+                bestvote=int(input("Desea ver las peliculas mejor votadas? 1: Si, 0: No: "))
+                worstvote=int(input("Desea ver las peliculas peor votadas? 1: Si, 0: No: "))
+                print(orderElementsByCriteria(listadetails,less,maxvote,minvote,bestvote,worstvote))
             elif int(inputs[0])==4: #opcion 4
                 if lista==None or lista['size']==0: #obtener la longitud de la lista
                     print("La lista esta vacía")

@@ -30,13 +30,18 @@ import csv
 #list_type = 'ARRAY_LIST'
 list_type = 'SINGLE_LINKED'
 
-lst_books = lt.newList(list_type)
-booksfile = cf.data_dir + 'GoodReads/books.csv'
+lst_moviesdetails = lt.newList(list_type)
+lst_moviescasting = lt.newList(list_type)
+
+moviesdetailsfile = cf.data_dir + 'Data/SmallMoviesDetailsCleaned.csv'
+moviescastingfile = cf.data_dir + 'MoviesCastingRaw-small.csv'
 
 def setUp():
-    print('Loading books')
-    loadCSVFile(booksfile, lst_books)
-    print(lst_books['size'])
+    print('Loading movies')
+    loadCSVFile(moviesdetailsfile, lst_moviesdetails)
+    loadCSVFile(moviescastingfile, lst_moviescasting)
+    print(lst_moviesdetails["size"])
+    print(lst_moviescasting["size"])
 
 
 def tearDown():
@@ -52,31 +57,56 @@ def printList(lst):
     iterator = it.newIterator(lst)
     while it.hasNext(iterator):
         element = it.next(iterator)
-        print(element['goodreads_book_id'])
+        print(element['id'])
 
 def less(element1, element2):
-    if int(element1['goodreads_book_id']) < int(element2['goodreads_book_id']):
+    if int(element1['id']) < int(element2['id']):
         return True
     return False
 
-def test_sort():
+def greater(element1, element2):
+    if int(element1['id']) > int(element2['id']):
+        return True
+    return False
+
+def test_sort_details():
     """
     Lista con elementos en orden aleatorio
     """
     print("sorting ....")
-    sort.shellSort(lst_books, less)
+    sort.shellSort(lst_moviesdetails, less)
 
-def test_loading_CSV_y_ordenamiento():
+def test_sort_casting():
+    """
+    Lista con elementos en orden aleatorio
+    """
+    print("sorting ....")
+    sort.shellSort(lst_moviescasting, less)
+
+def test_loading_CSV_y_ordenamiento_details():
     """
     Prueba que se pueda leer el archivo y que despues de relizar el sort, el orden este correcto
     """
     setUp()
-    sort.shellSort(lst_books,less)
-    while not (lt.isEmpty(lst_books)):
-        x = int(lt.removeLast(lst_books)['goodreads_book_id'])
-        if not (lt.isEmpty(lst_books)):
-            y = int(lt.lastElement(lst_books)['goodreads_book_id'])
+    sort.shellSort(lst_moviesdetails,less)
+    while not (lt.isEmpty(lst_moviesdetails)):
+        x = int(lt.removeLast(lst_moviesdetails)['id'])
+        if not (lt.isEmpty(lst_moviesdetails)):
+            y = int(lt.lastElement(lst_moviesdetails)['id'])
         else:
             break
         assert x > y
 
+def test_loading_CSV_y_ordenamiento_casting():
+    """
+    Prueba que se pueda leer el archivo y que despues de relizar el sort, el orden este correcto
+    """
+    setUp()
+    sort.shellSort(lst_moviescasting,less)
+    while not (lt.isEmpty(lst_moviescasting)):
+        x = int(lt.removeLast(lst_moviescasting)['id'])
+        if not (lt.isEmpty(lst_moviescasting)):
+            y = int(lt.lastElement(lst_moviescasting)['id'])
+        else:
+            break
+        assert x > y

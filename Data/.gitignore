@@ -5,4 +5,6 @@ __pycache__/
 
 .DS_Store
 .csv
+!SmallMoviesDetailsCleaned.csv
+!MoviesCastingRaw-small.csv
 !test.csv
